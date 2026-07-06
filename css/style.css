@@ -43,7 +43,7 @@
 body {
     margin: 0;
     overflow: hidden;
-    background-color: #000; /* letterbox bars */
+    background-color: #ddd0c7; /* letterbox bars — matches BASE01.png's beige edges */
     font-family: monospace;
 }
 

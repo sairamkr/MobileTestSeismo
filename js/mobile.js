@@ -7,7 +7,8 @@
 
 import { CONFIG } from './config.js';
 
-const MOBILE_SCROLL_BOOST = 1.15; // +15% scroll speed on mobile
+const MOBILE_SCROLL_BOOST = 1.20; // +20% scroll speed on mobile
+const MOBILE_FONT_SCALE = 3;      // 3x text size on mobile (advances scale too)
 
 export function isMobileDevice() {
   const coarse = window.matchMedia('(pointer: coarse)').matches;
@@ -21,6 +22,11 @@ export function initMobile() {
   // Faster scrolling on touch devices (wheel + drag paths both boosted).
   CONFIG.scroll.sensitivity *= MOBILE_SCROLL_BOOST;
   CONFIG.scroll.dragSensitivity *= MOBILE_SCROLL_BOOST;
+
+  // Bigger text on small screens. Line/paragraph advances must scale with the
+  // font sizes or lines overlap. Runs before the first drawMarkdown() call.
+  for (const k in CONFIG.layout.fonts.size) CONFIG.layout.fonts.size[k] *= MOBILE_FONT_SCALE;
+  for (const k in CONFIG.layout.advance)    CONFIG.layout.advance[k]    *= MOBILE_FONT_SCALE;
 
   const overlay = document.createElement('div');
   overlay.id = 'rotate-overlay';
