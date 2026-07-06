@@ -23,10 +23,9 @@ export function initMobile() {
   CONFIG.scroll.sensitivity *= MOBILE_SCROLL_BOOST;
   CONFIG.scroll.dragSensitivity *= MOBILE_SCROLL_BOOST;
 
-  // Bigger text on small screens. Line/paragraph advances must scale with the
-  // font sizes or lines overlap. Runs before the first drawMarkdown() call.
+  // Bigger text on small screens. Runs before the first drawMarkdown() call.
+  // Advances (line/paragraph spacing) deliberately stay at base values.
   for (const k in CONFIG.layout.fonts.size) CONFIG.layout.fonts.size[k] *= MOBILE_FONT_SCALE;
-  for (const k in CONFIG.layout.advance)    CONFIG.layout.advance[k]    *= MOBILE_FONT_SCALE;
 
   const overlay = document.createElement('div');
   overlay.id = 'rotate-overlay';
