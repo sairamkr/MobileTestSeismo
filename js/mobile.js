@@ -8,7 +8,7 @@
 import { CONFIG } from './config.js';
 
 const MOBILE_SCROLL_BOOST = 1.20; // +20% scroll speed on mobile
-const MOBILE_FONT_SCALE = 3;      // 3x text size on mobile (advances scale too)
+const MOBILE_FONT_SCALE = 2;      // 2x text size on mobile (body 36 -> 72)
 
 export function isMobileDevice() {
   const coarse = window.matchMedia('(pointer: coarse)').matches;
