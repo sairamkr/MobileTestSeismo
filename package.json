@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@fontsource/ia-writer-quattro": "^5.2.5",
+    "charter-webfont": "^4.1.0",
+    "three": "^0.185.1"
+  },
+  "devDependencies": {
+    "vite": "^8.1.3"
+  }
+}

@@ -1,0 +1,177 @@
+/* Switch + light bank metrics (positions in viewport units so they track the
+   BASE01.png console). Tune here — estimated from the reference image. */
+:root {
+    --toggle-center-y: 88.2cqh;  /* vertical center of the row (% of stage) */
+    --toggle-left: 5.3cqw;       /* left edge of the first switch */
+    --toggle-gap: 0.5cqw;       /* gap between every switch/light */
+    --switch-size: 5.85cqw;      /* switch (larger) diameter */
+    --light-size: 3.6cqw;        /* light (smaller) diameter */
+}
+
+/* Bitstream Charter (redistributable, bundled in Assets/fonts/ — see
+   Charter-LICENSE.txt). Regular, bold, italic, and bold-italic faces — the text
+   renderer uses all four for Markdown styling. */
+@font-face {
+    font-family: "Charter";
+    src: url("../Assets/fonts/charter_regular.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Charter";
+    src: url("../Assets/fonts/charter_bold.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Charter";
+    src: url("../Assets/fonts/charter_italic.woff2") format("woff2");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Charter";
+    src: url("../Assets/fonts/charter_bold_italic.woff2") format("woff2");
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    background-color: #000; /* letterbox bars */
+    font-family: monospace;
+}
+
+/* Largest 16:9 box that fits the window, centered. Everything positions
+   relative to this, and cqw/cqh units let children scale with it.
+   (16/9 = 1.7778, 9/16 = 0.5625) */
+#stage {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    width: min(100vw, 177.78vh);
+    height: min(100vh, 56.25vw);
+    overflow: hidden;
+    container-type: size;
+}
+
+#bg-frame {
+    position: absolute;
+    inset: 0;
+    background: url('../BASE01.png') center center / cover no-repeat;
+    z-index: 0;
+    pointer-events: none;
+}
+
+#canvas-container {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    /* Let pointer-drag scrolling work without the browser hijacking touch gestures. */
+    touch-action: none;
+}
+
+/* The pen needle — rotates about its pivot hole (transform-origin set in JS). */
+#pen {
+    position: absolute;
+    z-index: 3;
+    pointer-events: none;
+    will-change: transform;
+}
+
+/* Pen shadow — sits directly behind the pen and rotates with it. */
+#pen-shadow {
+    position: absolute;
+    z-index: 2;
+    pointer-events: none;
+    will-change: transform;
+}
+
+#toggle-panel {
+    position: absolute;
+    top: var(--toggle-center-y);
+    left: var(--toggle-left);
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--toggle-gap);
+    z-index: 10;
+}
+
+/* One switch + light unit. */
+.toggle {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--toggle-gap);
+}
+
+.toggle-switch {
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.toggle-switch img {
+    width: var(--switch-size);
+    height: auto;
+    display: block;
+}
+
+.toggle-light {
+    width: var(--light-size);
+    height: auto;
+    display: block;
+}
+
+/* Mobile portrait gate (built by js/mobile.js). Sits above everything and
+   asks the visitor to rotate to landscape; hidden once they do. */
+#rotate-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 2rem;
+    background: #000;
+    color: #e8e4da;
+    text-align: center;
+}
+
+#rotate-overlay.hidden {
+    display: none;
+}
+
+#rotate-overlay svg {
+    width: 72px;
+    height: 72px;
+}
+
+#rotate-overlay p {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+#rotate-button {
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 0.8em 1.6em;
+    color: #000;
+    background: #e8e4da;
+    border: 0;
+    border-radius: 4px;
+    cursor: pointer;
+}
