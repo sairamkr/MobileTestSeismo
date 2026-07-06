@@ -40,18 +40,43 @@ export function initMobile() {
   `;
   document.body.appendChild(overlay);
 
-  overlay.querySelector('#rotate-button').addEventListener('click', async () => {
-    // Fullscreen first: orientation.lock() requires it on most browsers.
+  // No usable fullscreen API (e.g. iPhone Safari, or embedded in an iframe
+  // without allowfullscreen): hide the button, the rotate message is enough.
+  const fsAvailable =
+    document.fullscreenEnabled || document.webkitFullscreenEnabled ||
+    document.documentElement.webkitRequestFullscreen;
+  if (!fsAvailable) overlay.querySelector('#rotate-button').style.display = 'none';
+
+  // Fullscreen must be requested synchronously inside the click handler (no
+  // preceding await) or Android drops the user-activation and silently ignores
+  // it. Vendor-prefixed fallbacks cover older Android/Samsung browsers.
+  overlay.querySelector('#rotate-button').addEventListener('click', () => {
+    const el = document.documentElement;
+    const request =
+      el.requestFullscreen ||
+      el.webkitRequestFullscreen ||
+      el.mozRequestFullScreen ||
+      el.msRequestFullscreen;
+    if (!request) return;
     try {
-      const el = document.documentElement;
-      if (el.requestFullscreen) await el.requestFullscreen();
-      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-    } catch (err) { /* fullscreen denied — continue */ }
-    try {
-      if (screen.orientation?.lock) await screen.orientation.lock('landscape');
-    } catch (err) { /* not supported (iOS) — user rotates manually */ }
-    update();
+      const p = request.call(el);
+      if (p?.catch) p.catch((err) => console.warn('Fullscreen denied:', err));
+    } catch (err) {
+      console.warn('Fullscreen failed:', err);
+    }
   });
+
+  // Orientation lock only works once fullscreen is actually engaged, so do it
+  // in the fullscreenchange event rather than racing it in the click handler.
+  function lockLandscape() {
+    if (!(document.fullscreenElement || document.webkitFullscreenElement)) return;
+    try {
+      screen.orientation?.lock('landscape')?.catch(() => { /* iOS: unsupported */ });
+    } catch (err) { /* older API shapes */ }
+    update();
+  }
+  document.addEventListener('fullscreenchange', lockLandscape);
+  document.addEventListener('webkitfullscreenchange', lockLandscape);
 
   const landscape = window.matchMedia('(orientation: landscape)');
   const update = () => overlay.classList.toggle('hidden', landscape.matches);
